@@ -1,6 +1,7 @@
 import express from "express";
 import * as dotenv from "dotenv";
 import axios from "axios";
+import NasaClient from './nasaClient.js';
 
 const app = express();
 const port = 8000;
@@ -11,9 +12,9 @@ if (process.env.NODE_ENV !== "production"){
 }
 
 
-let obj;
 app.use(express.json());
 const router = express.Router();
+const nasaClient = new NasaClient(process.env.API_KEY)
 
 
 router.get('/test', (req, res) => res.send('Hello world !'));
@@ -35,13 +36,16 @@ router.get('/rovers/photos', (req, res) => {
 })
 
 router.get('/rovers/:name/photos/:camera', (req, res) => {
-    let {name, camera} = req.params
-    axios.get(`${NASA}/rovers/${name}/photos/?sol=1000&camera=${camera}&api_key=${process.env.API_KEY}`)
-        .then(response => {
-            console.log("getting response from Nasa")
-            return response.data
-        }).then(data => res.send(data))
-})
+    //let {name, camera} = req.params
+    // axios.get(`${NASA}/rovers/${name}/photos/?sol=1000&camera=${camera}&api_key=${process.env.API_KEY}`)
+    //     .then(response => {
+    //         console.log("getting response from Nasa")
+    //         return response.data
+    //     }).then(data => res.send(data))
+    nasaClient.getNameCameraPhotos(req,res)
+
+}
+)
 
 
 app.use('/', router);
